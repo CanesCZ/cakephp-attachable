@@ -1,0 +1,14 @@
+{
+	"name": "canescz/cakephp-attachable",
+	"type": "cakephp-plugin",
+	"description": "CakePHP behavior to easily upload and attach files to models. Simple.",
+	"keywords": ["cakephp","model","files","attachment"],
+	"homepage": "http://github.com/dereuromark/cakephp-queue",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Ondrej Henek",
+			"homepage": "http://www.canes.cz"
+		}
+	]
+}
