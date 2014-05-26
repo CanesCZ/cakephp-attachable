@@ -1,12 +1,8 @@
 <?php
-App::uses('AttachableException', 'Attachable.Lib/Error/Exception');
-App::uses('Folder', 'Utility');
-
 class Attachment extends Model {
 	
 	private $settings = array(
-		'uploadDir' => null, // updated in construct
-		'field' => 'files',
+		
 	);
 	public $validate = array(
 		'files' => array(
@@ -16,8 +12,7 @@ class Attachment extends Model {
 	
 	public function __construct($id = false, $table = null, $ds = null) {
 		parent::__construct($id, $table, $ds);
-		// move this to global config!!!
-		$this->settings['uploadDir'] = WWW_ROOT . 'files' . DS . 'uploads' . DS;
+		$this->settings['uploadDir'] = WWW_ROOT . DS . 'files' . DS . 'uploads' . DS;
 	}
 
 /**
@@ -42,7 +37,23 @@ class Attachment extends Model {
  * @param array $options
  */
 	public function beforeSave($options = array()){
-		print_r($this->data);
+		
+		foreach ($this->data['Attachment']['files'] as &$file) {
+			
+			print_r($this->RelatedModel->id);
+			print_r($this->RelatedModel->alias);
+			$file['parent_id'] = null;
+			$file['parent_type'] = null;
+			$file['user_id'] = $this->Auth->user('id');
+			$file['type'] = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+			$file['name'] = pathinfo($file['name'], PATHINFO_FILENAME);
+			$file['path'] = Inflector::slug($file['name']) . microtime() .'.'. $file['type'];
+			
+			if (!move_uploaded_file($file['tmp_name'], $this->settings['uploadDir'] . $file['path'])){
+				return false;
+			}
+		}
+		
 		return true;
 	}
 	
@@ -62,15 +73,6 @@ class Attachment extends Model {
 			return true;
 		} else {
 			return false;
-		}
-	}
-	
-	public function updateSettings($settings){
-		$this->settings = array_merge($this->settings, $settings);
-		$uploadsFolder = new Folder($this->settings['uploadDir'], true);
-		
-		if (!$uploadsFolder) {
-			throw new AttachableException('Unable to create uploads folder');
 		}
 	}
 	
