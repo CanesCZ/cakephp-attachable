@@ -72,6 +72,8 @@ class AttachableBehavior extends ModelBehavior {
  * @throws AttachableException
  */
 	public function afterSave(Model $model, $created, $options = array()) {
+		if (empty($model->data['Attachment'])) return true;
+		
 		$attachments = array();
 		
 		foreach ($model->data['Attachment']['files'] as $file) {

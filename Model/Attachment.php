@@ -58,7 +58,14 @@ class Attachment extends Model {
 
 	
 	public function beforeDelete($cascade = true){
-		if ($unlinkedFile) {
+		
+		$attachment = $this->find('first', array(
+			'conditions' => array('Attachment.id' => $this->id),
+			'fields' => array('path'),
+			'contain' => false
+		));
+		
+		if (unlink($this->settings['uploadDir'] . $attachment['Attachment']['path'])) {
 			return true;
 		} else {
 			return false;
